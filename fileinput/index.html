@@ -1,0 +1,239 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      h2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      body {
+        margin : 0px;
+      }
+  
+      img {
+        width: 50vw;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+  
+      .real-upload {
+        display: none;
+      }
+      .outter {
+        margin-top: 10px;
+        justify-content: center;
+        align-items: center;
+      }
+  
+      .image-preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 60vw;
+        height: 60vh;
+        margin:auto;
+        display: flex;
+      }
+
+      .button_outter {
+        text-align:right;
+      }
+
+    button.upload {
+        /* Variables */
+        --button_radius: 0.75em;
+        --button_color: #e8e8e8;
+        --button_outline_color: #000000;
+        font-size: 17px;
+        font-weight: bold;
+        border: none;
+        border-radius: var(--button_radius);
+        background: var(--button_outline_color);
+        display: flex;
+        margin:auto;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .button_top {
+        display: block;
+        box-sizing: border-box;
+        border: 2px solid var(--button_outline_color);
+        border-radius: var(--button_radius);
+        padding: 0.75em 1.5em;
+        background: var(--button_color);
+        color: var(--button_outline_color);
+        transform: translateY(-0.2em);
+        transition: transform 0.1s ease;
+    }
+
+    button:hover .button_top {
+        /* Pull the button upwards when hovered */
+        transform: translateY(-0.33em);
+    }
+
+    button:active .button_top {
+        /* Push the button downwards when pressed */
+        transform: translateY(0);
+    }
+
+
+    button.apply {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        outline: none;
+        border: 0;
+        vertical-align: middle;
+        text-decoration: none;
+        background: transparent;
+        padding: 0;
+        font-size: inherit;
+        font-family: inherit;
+        width: 12rem;
+        height: auto;
+}
+
+button.apply .circle {
+ transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+ position: relative;
+ display: block;
+ margin: 0;
+ width: 3rem;
+ height: 3rem;
+ background: #282936;
+ border-radius: 1.625rem;
+}
+
+button.apply .circle .icon {
+ transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+ position: absolute;
+ top: 0;
+ bottom: 0;
+ margin: auto;
+ background: #fff;
+}
+
+button.apply .circle .icon.arrow {
+ transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+ left: 0.625rem;
+ width: 1.125rem;
+ height: 0.125rem;
+ background: none;
+}
+
+button.apply .circle .icon.arrow::before {
+ position: absolute;
+ content: "";
+ top: -0.29rem;
+ right: 0.0625rem;
+ width: 0.625rem;
+ height: 0.625rem;
+ border-top: 0.125rem solid #fff;
+ border-right: 0.125rem solid #fff;
+ transform: rotate(45deg);
+}
+
+button.apply .button-text {
+ transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+ position: absolute;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ padding: 0.75rem 0;
+ margin: 0 0 0 1.85rem;
+ color: #282936;
+ font-weight: 700;
+ line-height: 1.6;
+ text-align: center;
+ text-transform: uppercase;
+}
+
+button:hover .circle {
+ width: 100%;
+}
+
+button:hover .circle .icon.arrow {
+ background: #fff;
+ transform: translate(1rem, 0);
+}
+
+button:hover .button-text {
+ color: #fff;
+}
+
+
+
+    </style>
+  </head>
+  
+  <body>
+    <input type="file" class="real-upload" accept="image/*">
+    <div class="outter">
+        <button class="upload"><span class="button_top">Upload Image</span></button>
+        <h2>옷 미리보기</h2>
+        <div class="image-preview"></div>
+        <div class="button_outter">
+        <button class="apply">
+            <span class="circle" aria-hidden="true">
+            <span class="icon arrow"></span>
+            </span>
+            <span class="button-text">Apply</span>
+        </button>
+        </div>
+    </div>
+
+
+    <script>
+      function getImageFiles(e) {
+        const uploadFiles = [];
+        const files = e.currentTarget.files;
+        const imagePreview = document.querySelector('.image-preview');
+        const docFrag = new DocumentFragment();
+  
+        if ([...files].length >= 7) {
+          alert('이미지는 최대 6개 까지 업로드가 가능합니다.');
+          return;
+        }
+  
+        // 파일 타입 검사
+        [...files].forEach(file => {
+          if (!file.type.match("image/.*")) {
+            alert('이미지 파일만 업로드가 가능합니다.');
+            return
+          }
+  
+          // 파일 갯수 검사
+          if ([...files].length < 7) {
+            uploadFiles.push(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const preview = createElement(e, file);
+              imagePreview.appendChild(preview);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+  
+      function createElement(e, file) {
+        const img = document.createElement('img');
+        img.setAttribute('src', e.target.result);
+        img.setAttribute('data-file', file.name);
+  
+        return img;
+      }
+  
+      const realUpload = document.querySelector('.real-upload');
+      const upload = document.querySelector('.upload');
+  
+      upload.addEventListener('click', () => realUpload.click());
+  
+      realUpload.addEventListener('change', getImageFiles);
+    </script>
+  </body>
