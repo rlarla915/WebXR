@@ -48,7 +48,6 @@ class App {
       // With everything set up, start the app.
       await this.onSessionStarted();
     } catch(e) {
-      console.log(e);
       onNoXRDevice();
     }
   }
@@ -93,15 +92,14 @@ class App {
   }
 
   /** Place a sunflower when the screen is tapped. */
-  onSelect = () => {
-    if (window.sunflower) {
-      const clone = window.sunflower.clone();
+   onSelect = () => {
+    
+    if (window.cloth) {
+      const clone = window.cloth.clone();
       clone.position.copy(this.reticle.position);
       this.scene.add(clone)
-
-      const shadowMesh = this.scene.children.find(c => c.name === 'shadowMesh');
-      shadowMesh.position.y = clone.position.y;
     }
+    
   }
 
   /**
@@ -168,8 +166,6 @@ class App {
       context: this.gl
     });
     this.renderer.autoClear = false;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     // Initialize our demo scene.
     this.scene = DemoUtils.createLitScene();
@@ -183,5 +179,18 @@ class App {
     this.camera.matrixAutoUpdate = false;
   }
 };
+
+window.textureLoader = new THREE.TextureLoader();
+const cloth_url = window.localStorage.getItem("cloths_url");
+window.localStorage.removeItem("cloths_url");
+window.textureLoader.load(cloth_url, function(texture) {
+  const material = new THREE.MeshBasicMaterial({
+    map: texture
+  });
+
+  const geometry = new THREE.PlaneGeometry(1, 1);
+  window.cloth = new THREE.Mesh(geometry, material)
+});
+
 
 window.app = new App();

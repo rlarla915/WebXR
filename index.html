@@ -167,6 +167,20 @@ button:hover .button-text {
  color: #fff;
 }
 
+.spinner {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 
     </style>
@@ -192,33 +206,44 @@ button:hover .button-text {
     <script>
       function getImageFiles(e) {
         const uploadFiles = [];
-        const files = e.currentTarget.files;
+        const file = e.currentTarget.files[0];
         const imagePreview = document.querySelector('.image-preview');
         const docFrag = new DocumentFragment();
   
-        if ([...files].length >= 7) {
-          alert('이미지는 최대 6개 까지 업로드가 가능합니다.');
-          return;
-        }
   
         // 파일 타입 검사
-        [...files].forEach(file => {
-          if (!file.type.match("image/.*")) {
-            alert('이미지 파일만 업로드가 가능합니다.');
-            return
-          }
-  
-          // 파일 갯수 검사
-          if ([...files].length < 7) {
-            uploadFiles.push(file);
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const preview = createElement(e, file);
-              imagePreview.appendChild(preview);
-            };
-            reader.readAsDataURL(file);
-          }
-        });
+        if (!file.type.match("image/.*")) {
+          alert('이미지 파일만 업로드가 가능합니다.');
+          return
+        }
+
+        // 파일 갯수 검사
+        
+        const loading = document.createElement("div");
+        loading.setAttribute('class', 'spinner')
+        imagePreview.appendChild(loading);
+
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = createElement(e, file);
+          imagePreview.innerHTML = ""
+          imagePreview.appendChild(preview);
+          window.localStorage.setItem("cloths_url", e.target.result)
+        };
+
+        let url = "http://localhost:5000/"
+        let data = new FormData()
+        data.append('file', file)
+        fetch(url, {
+          method : 'POST',
+          body : data
+        }).then((response) => response.blob())
+        .then((myBlob) =>
+        {
+          reader.readAsDataURL(myBlob);
+        })
+
       }
   
       function createElement(e, file) {
@@ -228,6 +253,9 @@ button:hover .button-text {
   
         return img;
       }
+      function startAR() {
+        location.href = "ar/index.html"
+      }
   
       const realUpload = document.querySelector('.real-upload');
       const upload = document.querySelector('.upload');
@@ -235,5 +263,8 @@ button:hover .button-text {
       upload.addEventListener('click', () => realUpload.click());
   
       realUpload.addEventListener('change', getImageFiles);
+
+      const sendButton = document.querySelector('.apply')
+      sendButton.addEventListener('click', startAR)
     </script>
   </body>

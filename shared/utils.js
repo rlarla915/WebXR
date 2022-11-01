@@ -39,15 +39,6 @@ window.gltfLoader.load("https://immersive-web.github.io/webxr-samples/media/gltf
   window.sunflower = gltf.scene;
 });
 
-window.textureLoader.load("tshirts.png", function(texture) {
-  const material = new THREE.MeshBasicMaterial({
-    map: texture
-  });
-
-  const geometry = new THREE.PlaneGeometry(1, 1);
-  window.tshirts = new THREE.Mesh(geometry, material)
-});
-
 
 window.DemoUtils = {
   /**
